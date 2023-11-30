@@ -61,7 +61,7 @@ describe Delayed::PerformableMethod do
       before do
         @params = ActionController::Parameters.new(:person => {
           :name => 'Francesco',
-          :age => 22,
+          :age  => 22,
           :role => 'admin'
         })
 
@@ -78,7 +78,7 @@ describe Delayed::PerformableMethod do
       before do
         @params = ActionController::Parameters.new(:person => {
           :name => 'Francesco',
-          :age => 22,
+          :age  => 22,
           :role => 'admin'
         })
 

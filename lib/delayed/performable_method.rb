@@ -30,20 +30,8 @@ module Delayed
     end
 
     # In ruby 3 we need to explicitly separate regular args from the keyword-args.
-    if RUBY_VERSION >= '3.0'
-      def perform
-        object.send(method_name, *args, **kwargs) if object
-      end
-    else
-      # On ruby 2, rely on the implicit conversion from a hash to kwargs
-      def perform
-        return unless object
-        if kwargs.present?
-          object.send(method_name, *args, kwargs)
-        else
-          object.send(method_name, *args)
-        end
-      end
+    def perform
+      object.send(method_name, *args, **kwargs) if object
     end
 
     def method(sym)

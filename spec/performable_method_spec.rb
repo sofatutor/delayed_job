@@ -4,7 +4,7 @@ require 'action_controller/metal/strong_parameters' if ActionPack::VERSION::MAJO
 describe Delayed::PerformableMethod do
   describe 'perform' do
     before do
-      @method = Delayed::PerformableMethod.new('foo', :count, ['o'])
+      @method = Delayed::PerformableMethod.new('foo', :count, 'o')
     end
 
     context 'with the persisted record cannot be found' do
@@ -23,20 +23,20 @@ describe Delayed::PerformableMethod do
     end
   end
 
-  describe 'perform with hash object' do
+  describe 'perform with positional argument' do
     before do
-      @method = Delayed::PerformableMethod.new('foo', :count, [{:o => true}])
+      @method = Delayed::PerformableMethod.new('foo', :count, {:o => true})
     end
 
     it 'calls the method on the object' do
-      expect(@method.object).to receive(:count).with(:o => true)
+      expect(@method.object).to receive(:count).with({:o => true})
       @method.perform
     end
   end
 
-  describe 'perform with hash object and kwargs' do
+  describe 'perform with positional argument and kwargs' do
     before do
-      @method = Delayed::PerformableMethod.new('foo', :count, [{:o => true}], :o2 => false)
+      @method = Delayed::PerformableMethod.new('foo', :count, {:o => true}, :o2 => false)
     end
 
     it 'calls the method on the object' do
@@ -45,13 +45,13 @@ describe Delayed::PerformableMethod do
     end
   end
 
-  describe 'perform with many hash objects' do
+  describe 'perform with postional hash argument' do
     before do
-      @method = Delayed::PerformableMethod.new('foo', :count, [{:o => true}, {:o2 => true}])
+      @method = Delayed::PerformableMethod.new('foo', :count, { :o => true, :o2 => true })
     end
 
     it 'calls the method on the object' do
-      expect(@method.object).to receive(:count).with({:o => true}, :o2 => true)
+      expect(@method.object).to receive(:count).with({:o => true, :o2 => true})
       @method.perform
     end
   end
@@ -65,7 +65,7 @@ describe Delayed::PerformableMethod do
           :role => 'admin'
         })
 
-        @method = Delayed::PerformableMethod.new('foo', :count, [@params])
+        @method = Delayed::PerformableMethod.new('foo', :count, @params)
       end
 
       it 'calls the method on the object' do
@@ -92,7 +92,7 @@ describe Delayed::PerformableMethod do
       end
 
       it 'calls the method on the object' do
-        expect(@method.object).to receive(:test_method).with('o', @params)
+        expect(@method.object).to receive(:test_method).with(['o', @params])
         @method.perform
       end
 
@@ -108,7 +108,7 @@ describe Delayed::PerformableMethod do
     end
 
     it 'calls the method on the object' do
-      expect(@method.object).to receive(:count).with('o', :o => true)
+      expect(@method.object).to receive(:count).with(['o', :o => true])
       @method.perform
     end
   end
@@ -125,7 +125,7 @@ describe Delayed::PerformableMethod do
     end
 
     it 'calls the method on the object' do
-      expect(@method.object).to receive(:test_method).with(:name => 'name', :any => 'any')
+      expect(@method.object).to receive(:test_method).with([], :name => 'name', :any => 'any')
       @method.perform
     end
 

@@ -2,7 +2,7 @@ module Delayed
   class PerformableMethod
     attr_accessor :object, :method_name, :args, :kwargs
 
-    def initialize(object, method_name, args, kwargs = {})
+    def initialize(object, method_name, *args, **kwargs)
       raise NoMethodError, "undefined method `#{method_name}' for #{object.inspect}" unless object.respond_to?(method_name, true)
 
       if object.respond_to?(:persisted?) && !object.persisted?

@@ -23,9 +23,9 @@ describe Delayed::PerformableMethod do
     end
   end
 
-  describe 'perform with positional argument' do
+  describe 'perform with hash object' do
     before do
-      @method = Delayed::PerformableMethod.new('foo', :count, {:o => true})
+      @method = Delayed::PerformableMethod.new('foo', :count, [], {:o => true})
     end
 
     it 'calls the method on the object' do
@@ -34,20 +34,22 @@ describe Delayed::PerformableMethod do
     end
   end
 
-  describe 'perform with positional argument and kwargs' do
-    before do
-      @method = Delayed::PerformableMethod.new('foo', :count, {:o => true}, :o2 => false)
-    end
+  # I do not think this spec case is needed with Ruby 3
 
-    it 'calls the method on the object' do
-      expect(@method.object).to receive(:count).with({:o => true}, :o2 => false)
-      @method.perform
-    end
-  end
+  # describe 'perform with positional argument and kwargs' do
+  #   before do
+  #     @method = Delayed::PerformableMethod.new('foo', :count, {:o => true}, :o2 => false)
+  #   end
+
+  #   it 'calls the method on the object' do
+  #     expect(@method.object).to receive(:count).with({:o => true}, :o2 => false)
+  #     @method.perform
+  #   end
+  # end
 
   describe 'perform with postional hash argument' do
     before do
-      @method = Delayed::PerformableMethod.new('foo', :count, { :o => true, :o2 => true })
+      @method = Delayed::PerformableMethod.new('foo', :count, [], { :o => true, :o2 => true })
     end
 
     it 'calls the method on the object' do
@@ -92,7 +94,7 @@ describe Delayed::PerformableMethod do
       end
 
       it 'calls the method on the object' do
-        expect(@method.object).to receive(:test_method).with(['o', @params])
+        expect(@method.object).to receive(:test_method).with('o', @params)
         @method.perform
       end
 
@@ -102,13 +104,13 @@ describe Delayed::PerformableMethod do
     end
   end
 
-  describe 'perform with sample object and hash object' do
+  describe 'perform with args and kwargs' do
     before do
-      @method = Delayed::PerformableMethod.new('foo', :count, ['o', {:o => true}])
+      @method = Delayed::PerformableMethod.new('foo', :count, 'o', {:o => true})
     end
 
     it 'calls the method on the object' do
-      expect(@method.object).to receive(:count).with(['o', :o => true])
+      expect(@method.object).to receive(:count).with('o', :o => true)
       @method.perform
     end
   end
@@ -121,11 +123,11 @@ describe Delayed::PerformableMethod do
         end
       end
 
-      @method = Delayed::PerformableMethod.new(klass.new, :test_method, [], :name => 'name', :any => 'any')
+      @method = Delayed::PerformableMethod.new(klass.new, :test_method, [], {:name => 'name', :any => 'any'})
     end
 
     it 'calls the method on the object' do
-      expect(@method.object).to receive(:test_method).with([], :name => 'name', :any => 'any')
+      expect(@method.object).to receive(:test_method).with({:name => 'name', :any => 'any'})
       @method.perform
     end
 

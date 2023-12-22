@@ -56,57 +56,13 @@ describe Delayed::PerformableMethod do
     end
   end
 
-  describe 'perform with params object' do
-    before do
-      @params = ActionController::Parameters.new(:person => {
-        :name => 'Francesco',
-        :age  => 22,
-        :role => 'admin'
-      })
-
-      @method = Delayed::PerformableMethod.new('foo', :count, @params)
-    end
-
-    it 'calls the method on the object' do
-      expect(@method.object).to receive(:count).with(@params)
-      @method.perform
-    end
-  end
-
-  describe 'perform with sample object and params object' do
-    before do
-      @params = ActionController::Parameters.new(:person => {
-        :name => 'Francesco',
-        :age  => 22,
-        :role => 'admin'
-      })
-
-      klass = Class.new do
-        def test_method(_o1, _o2)
-          true
-        end
-      end
-
-      @method = Delayed::PerformableMethod.new(klass.new, :test_method, ['o', @params])
-    end
-
-    it 'calls the method on the object' do
-      expect(@method.object).to receive(:test_method).with('o', @params)
-      @method.perform
-    end
-
-    it 'calls the method on the object (real)' do
-      expect(@method.perform).to be true
-    end
-  end
-
   describe 'perform with args and kwargs' do
     before do
       @method = Delayed::PerformableMethod.new('foo', :count, ['o', :o => true])
     end
 
     it 'calls the method on the object' do
-      expect(@method.object).to receive(:count).with(['o', :o => true])
+      expect(@method.object).to receive(:count).with('o', { :o => true })
       @method.perform
     end
   end
@@ -153,6 +109,53 @@ describe Delayed::PerformableMethod do
 
     it 'returns class_name.method_name for class methods' do
       expect(Delayed::PerformableMethod.new(Class, :inspect, []).display_name).to eq('Class.inspect')
+    end
+  end
+
+  context 'with params object' do
+    let(:params) {
+      ActionController::Parameters.new(:person => {
+        :name => 'Francesco',
+        :age  => 22,
+        :role => 'admin'
+      })
+    }
+
+    describe 'perform with params object' do
+      it 'calls the method on the object' do
+        @method = Delayed::PerformableMethod.new('foo', :count, params)
+        expect(@method.object).to receive(:count).with(params)
+        @method.perform
+      end
+    end
+
+    describe 'perform with params object and keyword argument' do
+      it 'calls the method on the object' do
+        @method = Delayed::PerformableMethod.new('foo', :count, params, country: 'Spain')
+        expect(@method.object).to receive(:count).with(params, country: 'Spain')
+        @method.perform
+      end
+    end
+
+    describe 'perform with sample object and params object' do
+      before do
+        klass = Class.new do
+          def test_method(_o1, _o2)
+            true
+          end
+        end
+
+        @method = Delayed::PerformableMethod.new(klass.new, :test_method, ['o', params])
+      end
+
+      it 'calls the method on the object' do
+        expect(@method.object).to receive(:test_method).with('o', params)
+        @method.perform
+      end
+
+      it 'calls the method on the object (real)' do
+        expect(@method.perform).to be true
+      end
     end
   end
 

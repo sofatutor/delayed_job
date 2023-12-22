@@ -23,6 +23,28 @@ describe Delayed::PerformableMethod do
     end
   end
 
+  describe 'perform with sample object and hash object' do
+    before do
+      @method = Delayed::PerformableMethod.new('foo', :count, ['o', { :o => true }])
+    end
+
+    it 'calls the method on the object' do
+      expect(@method.object).to receive(:count).with('o', { :o => true } )
+      @method.perform
+    end
+  end
+
+  describe 'perform with sample object and options hash' do
+    before do
+      @method = Delayed::PerformableMethod.new('foo', :count, ['o'], { :o => true })
+    end
+
+    it 'calls the method on the object' do
+      expect(@method.object).to receive(:count).with('o', { :o => true } )
+      @method.perform
+    end
+  end
+
   describe 'perform with hash object' do
     before do
       @method = Delayed::PerformableMethod.new('foo', :count, [{:o => true}] )
@@ -34,7 +56,7 @@ describe Delayed::PerformableMethod do
     end
   end
 
-  describe 'perform with positional hash argument and kwargs' do
+  describe 'perform with positional hash argument and options hash' do
     before do
       @method = Delayed::PerformableMethod.new('foo', :count, [{:o => true}], :o2 => false)
     end
@@ -52,17 +74,6 @@ describe Delayed::PerformableMethod do
 
     it 'calls the method on the object' do
       expect(@method.object).to receive(:count).with({ :o => true}, {:o2 => true })
-      @method.perform
-    end
-  end
-
-  describe 'perform with args and kwargs' do
-    before do
-      @method = Delayed::PerformableMethod.new('foo', :count, ['o', :o => true])
-    end
-
-    it 'calls the method on the object' do
-      expect(@method.object).to receive(:count).with('o', { :o => true })
       @method.perform
     end
   end

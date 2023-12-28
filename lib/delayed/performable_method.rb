@@ -38,10 +38,13 @@ module Delayed
       # On ruby 2, rely on the implicit conversion from a hash to kwargs
       def perform
         return unless object
+
+        arguments = args.is_a?(Array) ? args : [args]
+
         if kwargs.present?
-          object.send(method_name, *args, kwargs)
+          object.send(method_name, *arguments, kwargs)
         else
-          object.send(method_name, *args)
+          object.send(method_name, *arguments)
         end
       end
     end

@@ -30,16 +30,11 @@ module Delayed
     def method(sym)
       object.method(sym)
     end
-    method_def = []
-    location = caller_locations(1, 1).first
-    file = location.path
-    line = location.lineno
-    definition = RUBY_VERSION >= '2.7' ? '...' : '*args, &block'
-    method_def <<
-      "def method_missing(#{definition})" \
-        "  object.send(#{definition})" \
-        'end'
-    module_eval(method_def.join(';'), file, line)
+
+    # rubocop:disable MethodMissing
+    def method_missing(symbol, *args)
+      object.send(symbol, *args)
+    end
     # rubocop:enable MethodMissing
 
     def respond_to?(symbol, include_private = false)

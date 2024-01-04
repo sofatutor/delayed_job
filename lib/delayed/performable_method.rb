@@ -23,6 +23,12 @@ module Delayed
       end
     end
 
+    def kwargs
+      # Default to a hash so that we can handle deserializing jobs that were
+      # created before kwargs was available.
+      @kwargs || {}
+    end
+
     def perform
       object.send(method_name, *args, **kwargs) if object
     end

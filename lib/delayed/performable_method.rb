@@ -23,30 +23,8 @@ module Delayed
       end
     end
 
-    def kwargs
-      # Default to a hash so that we can handle deserializing jobs that were
-      # created before kwargs was available.
-      @kwargs || {}
-    end
-
-    # In ruby 3 we need to explicitly separate regular args from the keyword-args.
-    if RUBY_VERSION >= '3.0'
-      def perform
-        object.send(method_name, *args, **kwargs) if object
-      end
-    else
-      # On ruby 2, rely on the implicit conversion from a hash to kwargs
-      def perform
-        return unless object
-
-        arguments = args.is_a?(Array) ? args : [args]
-
-        if kwargs.present?
-          object.send(method_name, *arguments, kwargs)
-        else
-          object.send(method_name, *arguments)
-        end
-      end
+    def perform
+      object.send(method_name, *args, **kwargs) if object
     end
 
     def method(sym)

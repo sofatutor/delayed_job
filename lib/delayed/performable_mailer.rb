@@ -3,7 +3,7 @@ require 'mail'
 module Delayed
   class PerformableMailer < PerformableMethod
     def perform
-      mailer = super
+      mailer = object.send(method_name, *args, **kwargs)
       mailer.respond_to?(:deliver_now) ? mailer.deliver_now : mailer.deliver
     end
   end

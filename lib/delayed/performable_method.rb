@@ -32,8 +32,8 @@ module Delayed
     end
 
     # rubocop:disable MethodMissing
-    def method_missing(symbol, *args)
-      object.send(symbol, *args)
+    def method_missing(symbol, *args, **kwargs)
+      object.send(symbol, *args, **kwargs)
     end
     # rubocop:enable MethodMissing
 

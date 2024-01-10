@@ -29,39 +29,18 @@ module Delayed
       @kwargs || {}
     end
 
-    # In ruby 3 we need to explicitly separate regular args from the keyword-args.
-    if RUBY_VERSION >= '3.0'
-      def perform
-        object.send(method_name, *args, **kwargs) if object
-      end
-    else
-      # On ruby 2, rely on the implicit conversion from a hash to kwargs
-      def perform
-        return unless object
-
-        arguments = args.is_a?(Array) ? args : [args]
-
-        if kwargs.present?
-          object.send(method_name, *arguments, kwargs)
-        else
-          object.send(method_name, *arguments)
-        end
-      end
+    def perform
+      object.send(method_name, *args, **kwargs) if object
     end
 
     def method(sym)
       object.method(sym)
     end
-    method_def = []
-    location = caller_locations(1, 1).first
-    file = location.path
-    line = location.lineno
-    definition = RUBY_VERSION >= '2.7' ? '...' : '*args, &block'
-    method_def <<
-      "def method_missing(#{definition})" \
-        "  object.send(#{definition})" \
-        'end'
-    module_eval(method_def.join(';'), file, line)
+
+    # rubocop:disable MethodMissing
+    def method_missing(symbol, *args, **kwargs)
+      object.send(symbol, *args, **kwargs)
+    end
     # rubocop:enable MethodMissing
 
     def respond_to?(symbol, include_private = false)

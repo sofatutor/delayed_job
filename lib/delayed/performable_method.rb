@@ -24,9 +24,13 @@ module Delayed
     end
 
     def kwargs
-      # Default to a hash so that we can handle deserializing jobs that were
-      # created before kwargs was available.
+      check_kwargs
       @kwargs || {}
+    end
+
+    def args
+      check_kwargs
+      @args
     end
 
     def perform
@@ -45,6 +49,15 @@ module Delayed
 
     def respond_to?(symbol, include_private = false)
       super || object.respond_to?(symbol, include_private)
+    end
+
+    protected
+
+    def check_kwargs
+      # Convert jobs created before the kwargs patch.
+      if !@kwargs && @args.last.respond_to?(:to_hash)
+        @kwargs = @args.pop.to_hash
+      end
     end
   end
 end

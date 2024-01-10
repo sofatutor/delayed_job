@@ -69,10 +69,6 @@ group :test do
   end
 end
 
-group :development, :test do
-  gem 'pry'
-end
-
 group :rubocop do
   gem 'rubocop', '>= 0.25', '< 0.49'
 end

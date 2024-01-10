@@ -25,8 +25,6 @@ require 'active_record'
 require 'delayed_job'
 require 'delayed/backend/shared_spec'
 
-require 'pry'
-
 if ENV['DEBUG_LOGS']
   Delayed::Worker.logger = Logger.new(STDOUT)
 else

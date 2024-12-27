@@ -77,6 +77,7 @@ group :test do
     gem 'base64'
     gem 'bigdecimal'
     gem 'mutex_m'
+    gem 'ostruct'
   end
   if ENV['RAILS_VERSION'].nil? || ENV['RAILS_VERSION'] >= '6.0.0'
     gem 'zeitwerk', :require => false

@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ['3.2', '3.3',  jruby-9.4, jruby-head, ruby-head]
+        ruby: ['3.2', '3.3', '3.4',  jruby-9.4, jruby-head, ruby-head]
         rails_version:
           - '7.0.0'
           - '7.1.0'
